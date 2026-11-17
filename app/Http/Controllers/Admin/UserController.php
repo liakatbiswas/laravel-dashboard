@@ -86,7 +86,7 @@ class UserController extends Controller
 
         $sent = $this->sendInviteSafely($user);
 
-        return redirect()->route('users.index')->with(
+        return redirect()->route($this->userListRoute())->with(
             $sent ? 'success' : 'warning',
             $sent
                 ? __('An invitation has been sent to :email.', ['email' => $user->email])
@@ -143,7 +143,7 @@ class UserController extends Controller
                 : $this->sendVerificationSafely($user);
         }
 
-        return redirect()->route('users.index')->with(
+        return redirect()->route($this->userListRoute())->with(
             $notificationSent ? 'success' : 'warning',
             $notificationSent
                 ? __('User has been updated.')
@@ -243,7 +243,7 @@ class UserController extends Controller
 
     private function sendInvite(User $user): void
     {
-        $token = Password::broker(config('fortify.passwords'))->createToken($user);
+        $token = Password::broker('invitations')->createToken($user);
         $user->notify(new AccountInvitation($token));
     }
 
@@ -271,6 +271,11 @@ class UserController extends Controller
 
             return false;
         }
+    }
+
+    private function userListRoute(): string
+    {
+        return auth()->user()->can('users.view') ? 'users.index' : 'dashboard';
     }
 
     private function revokeAccess(User $user): void

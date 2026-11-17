@@ -27,14 +27,14 @@ Existing installation-এর APP_KEY পরিবর্তন করবেন �
 
 - Public registration admission open থাকলে student role দেয়। প্রতি IP-তে সর্বোচ্চ ৫ attempts/minute এবং ২০/hour।
 - Login-এর জন্য active account এবং admin pages-এর জন্য verified email প্রয়োজন।
-- Profile page খোলার আগে password confirmation লাগে, কারণ সেখানে 2FA QR/recovery codes থাকে।
+- Profile page যেকোনো authenticated user খুলতে পারেন; সেখানে 2FA secret বা recovery codes দেখা যায় না। Two-factor settings page (`/admin/settings/two-factor`) password confirmation-এর পেছনে―সেখানে QR ও recovery codes থাকে।
 - Admin user-edit দিয়ে নিজের account পরিবর্তন করা যায় না; নিজের তথ্য profile থেকে পরিবর্তন করুন। Email বদলাতে current password প্রয়োজন।
 - Password reset ও password change পুরোনো Sanctum tokens বাতিল করে।
 - Deactivation, deletion বা administrator-এর email change session version বদলায়। ফলে database/file/Redis session-ও পরের request-এ বাতিল হয়। এই version check যুক্ত হওয়ার আগে তৈরি browser sessions-এ আবার login লাগবে।
 - Non-super-admin role manager কেবল নিজের permission-এর সীমার role এবং manage করতে পারে এমন সদস্যদের shared role পরিবর্তন করতে পারে। Protected student role শুধু super-admin পরিবর্তন করতে পারে। Super-admin role পরিবর্তনযোগ্য নয়।
 - Passkeys এখন বন্ধ। Contract, frontend ceremony এবং device tests সম্পূর্ণ না করে চালু করবেন না। বিদ্যমান passkeys table/data মুছে ফেলা হয়নি।
 - Admission form নির্দিষ্ট is_on boolean পাঠায়; একই close request দুবার দিলে registration পুনরায় খুলবে না। Settings/admission state সরাসরি database থেকে পড়া হয়।
-- Invitation mail synchronous; database commit-এর পরে পাঠানো হয়। Transport ব্যর্থ হলে account থাকে এবং user list থেকে resend করা যায়। Mail server acceptance inbox delivery-এর নিশ্চয়তা নয়।
+- Invitation link তিন দিন (4320 মিনিট) পর্যন্ত বৈধ; password reset link ৬০ মিনিট। Invitation mail synchronous; database commit-এর পরে পাঠানো হয়। Transport ব্যর্থ হলে account থাকে এবং user list থেকে resend করা যায়। Mail server acceptance inbox delivery-এর নিশ্চয়তা নয়।
 
 ## Production deployment
 
@@ -54,7 +54,7 @@ SUPER_ADMIN_PASSWORD=replace-with-a-unique-long-password
 
 প্রকৃত credentials repository-তে রাখবেন না। Mail host/user/password এবং database/cache/session connection production service অনুযায়ী দিন। Reverse proxy থাকলে trusted proxy/HTTPS configuration যাচাই করুন। Web root অবশ্যই `public/`; uploads directory-তে script execution বন্ধ রাখুন।
 
-প্রথম provisioning-এ admin seed করুন। Existing installation-এ seed পুনরায় চালানো existing admin password বদলায় না। Default `password` নিয়ে production seed application প্রত্যাখ্যান করে। Admin-এর 2FA চালু করে recovery codes নিরাপদে সংরক্ষণ করুন।
+প্রথম provisioning-এ admin seed করুন। Existing installation-এ seed পুনরায় চালানো existing admin password বদলায় না। Production-এ `SUPER_ADMIN_PASSWORD` ১২ অক্ষরের কম হলে seed application প্রত্যাখ্যান করে। Admin-এর 2FA চালু করে recovery codes নিরাপদে সংরক্ষণ করুন।
 
 Dependency install এবং build শেষ করে release-এর আগে migrations চালান:
 

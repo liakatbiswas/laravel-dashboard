@@ -1,11 +1,14 @@
-    <x-app-layout title="Invite user" :crumbs="['Users' => route('users.index'), 'Create User' => null]">
+    @php
+        $backUrl = auth()->user()->can('users.view') ? route('users.index') : route('dashboard');
+    @endphp
+    <x-app-layout title="Invite user" :crumbs="['Users' => auth()->user()->can('users.view') ? route('users.index') : null, 'Create User' => null]">
 
         <x-card class="max-w-3xl p-6">
             <form method="POST" action="{{ route('users.store') }}" class="space-y-6">
                 @csrf
                 @include('users._form', ['roles' => $roles])
                 <div class="flex justify-end gap-2">
-                    <a href="{{ route('users.index') }}"
+                    <a href="{{ $backUrl }}"
                         class="inline-flex items-center rounded-md bg-soft px-4 py-2 text-sm font-medium text-head hover:bg-line">{{ __('Cancel') }}</a>
                     <x-button>{{ __('Send invitation') }}</x-button>
                 </div>

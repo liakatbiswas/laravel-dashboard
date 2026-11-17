@@ -4,12 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Cache;
 
 class SiteSetting extends Model
 {
-    private const CACHE_KEY = 'site_settings.current.attributes.v1';
-
     protected $fillable = [
         'site_title',
         'site_subtitle',
@@ -27,13 +24,19 @@ class SiteSetting extends Model
 
     public static function current(): self
     {
-        return static::query()->findOrFail(1);
-    }
+        $setting = static::query()->find(1);
 
-    public static function clearCache(): void
-    {
-        Cache::forget(self::CACHE_KEY);
-        Cache::forget('site_settings.current');
+        if ($setting) {
+            return $setting;
+        }
+
+        // The settings row is missing (fresh install or accidental deletion).
+        // Fall back to sane defaults instead of taking every page down.
+        $fallback = new static;
+        $fallback->setRawAttributes(['site_title' => config('app.name', 'School Management System')], true);
+        $fallback->exists = false;
+
+        return $fallback;
     }
 
     public function updatedBy(): BelongsTo

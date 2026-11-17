@@ -6,18 +6,7 @@
     <x-field label="Email address" name="email" type="email" :value="$editing ? $user->email : null" required />
     <x-field label="Phone" name="phone" :value="$editing ? $user->phone : null" />
 
-    @if ($editing && auth()->id() === $user->id)
-        <div>
-            <p class="mb-1.5 text-sm font-medium text-head">{{ __('Role') }}</p>
-            <p class="text-mute">
-                {{ $user->roles->first()?->name ?? '—' }}
-                <span class="text-xs">{{ __('(You cannot change your own role.)') }}</span>
-            </p>
-            <input type="hidden" name="role" value="{{ $user->roles->first()?->name }}">
-        </div>
-    @else
-        <x-field label="Role" name="role" type="select" :value="$editing ? $user->roles->first()?->name : null" :options="$roles->mapWithKeys(fn($r) => [$r => ucfirst($r)])->all()" />
-    @endif
+    <x-field label="Role" name="role" type="select" :value="$editing ? $user->roles->first()?->name : null" :options="$roles->mapWithKeys(fn($r) => [$r => ucfirst($r)])->all()" />
 </div>
 
 @if (!$editing)

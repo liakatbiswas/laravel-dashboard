@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 
 class AdmissionOnOff extends Model
 {
@@ -21,6 +20,5 @@ class AdmissionOnOff extends Model
     public static function set(bool $enabled): void
     {
         static::query()->updateOrCreate(['id' => 1], ['is_on' => $enabled]);
-        Cache::forget('admission_on_off.is_on');
     }
 }

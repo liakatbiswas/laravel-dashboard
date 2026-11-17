@@ -22,8 +22,8 @@ class RolesAndSuperAdminSeeder extends Seeder
         $email = config('permissions.super_admin.email');
         $password = config('permissions.super_admin.password');
 
-        if (app()->isProduction() && $password === 'password') {
-            throw new \RuntimeException('Set SUPER_ADMIN_PASSWORD in the production environment.');
+        if (app()->isProduction() && strlen($password) < 12) {
+            throw new \RuntimeException('SUPER_ADMIN_PASSWORD must be at least 12 characters in production.');
         }
 
         $user = User::firstOrCreate(

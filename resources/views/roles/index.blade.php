@@ -24,7 +24,10 @@
             </thead>
             <tbody>
                 @forelse ($roles as $role)
-                    @php $protected = in_array($role->name, config('permissions.protected_roles', []), true); @endphp
+                    @php
+                        $protected = in_array($role->name, config('permissions.protected_roles', []), true);
+                        $canEditRole = $role->name !== 'super-admin' && (! $protected || auth()->user()->hasRole('super-admin'));
+                    @endphp
                     <tr>
                         <td>
                             <span class="font-medium text-head">{{ $role->name }}</span>
@@ -37,7 +40,7 @@
                         <td>{{ $role->permissions_count }}</td>
                         <td>
                             <div class="flex items-center justify-end gap-2">
-                                @if ($role->name !== 'super-admin')
+                                @if ($canEditRole)
                                     <a href="{{ route('roles.edit', $role) }}"
                                         class="inline-flex items-center gap-1 rounded-md bg-soft px-3 py-1 text-xs font-medium text-head hover:bg-line">
                                         <x-icon name="edit" class="size-3.5" /> {{ __('Edit') }} </a>

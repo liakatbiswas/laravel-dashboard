@@ -73,7 +73,9 @@ class SettingController extends Controller
             $data['updated_by'] = $request->user()->id;
 
             DB::transaction(function () use (&$siteSetting, &$oldPaths, $data, $uploads, $request): void {
-                $siteSetting = SiteSetting::query()->lockForUpdate()->findOrFail(1);
+                // The settings row should exist (created by migration); recreate it if it went missing.
+                $siteSetting = SiteSetting::query()->lockForUpdate()->find(1)
+                    ?? SiteSetting::query()->create(['id' => 1, 'site_title' => config('app.name', 'School Management System')]);
                 foreach ($uploads as $input => $column) {
                     if ($request->hasFile($input)) {
                         $oldPaths[$column] = $siteSetting->{$column};
@@ -91,8 +93,6 @@ class SettingController extends Controller
 
             throw $exception;
         }
-
-        SiteSetting::clearCache();
 
         foreach ($oldPaths as $column => $oldPath) {
             if ($oldPath && $oldPath !== $siteSetting->{$column}) {

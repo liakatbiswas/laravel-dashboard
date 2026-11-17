@@ -271,5 +271,20 @@
     "Email": "ইমেইল",
     "Edit Role": "ভূমিকা সম্পাদনা",
     "Edit User": "ব্যবহারকারী সম্পাদনা",
-    "Create User": "ব্যবহারকারী তৈরি করুন"
+    "Create User": "ব্যবহারকারী তৈরি করুন",
+    "Developed by": "তৈরি করেছেন",
+    "Get started": "শুরু করুন",
+    "Key features": "মূল সুবিধাসমূহ",
+    "Online admission": "অনলাইন ভর্তি",
+    "Enable or pause new admissions at any time.": "যেকোনো সময় নতুন ভর্তি চালু বা বন্ধ করুন।",
+    "User accounts with roles and fine-grained permissions.": "ভূমিকা ও সূক্ষ্ম পারমিশনসহ ব্যবহারকারী অ্যাকাউন্ট।",
+    "Roles & permissions": "ভূমিকা ও অনুমতি",
+    "Role-based access control for every screen.": "প্রতিটি স্ক্রিনের জন্য ভূমিকা-ভিত্তিক অ্যাক্সেস।",
+    "Every change is recorded and reviewable.": "প্রতিটি পরিবর্তন রেকর্ড ও পর্যালোচনাযোগ্য।",
+    "Site settings": "সাইট সেটিংস",
+    "Title, tagline, logo, favicon and contact details in one place.": "শিরোনাম, স্লোগান, লোগো, ফেভিকন ও যোগাযোগ এক জায়গায়।",
+    "Email verification": "ইমেইল যাচাইকরণ",
+    "Verified email-based access and password reset.": "যাচাইকৃত ইমেইল ভিত্তিক অ্যাক্সেস ও পাসওয়ার্ড রিসেট।",
+    "Contact us": "যোগাযোগ",
+    "Admissions, users, roles and settings in one secure dashboard.": "ভর্তি, ব্যবহারকারী, ভূমিকা ও সেটিংস—এক নিরাপদ ড্যাশবোর্ডে।"
 }

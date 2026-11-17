@@ -27,14 +27,13 @@ class UserRequest extends FormRequest
     {
 
         $target = $this->route('user');
-        $isSelf = $target && $target->is($this->user());
 
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255',
                 Rule::unique('users', 'email')->ignore($target?->id)],
             'phone' => ['nullable', 'string', 'max:20'],
-            'role' => [$isSelf ? 'nullable' : 'required',
+            'role' => ['required',
                 Rule::in($this->user()->assignableRoles())],
         ];
     }

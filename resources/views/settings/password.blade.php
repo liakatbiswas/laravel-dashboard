@@ -1,4 +1,4 @@
-<x-app-layout title="Change password" :crumbs="['Settings' => route('settings.index'), 'Change password' => null]">
+<x-app-layout title="Change password" :crumbs="['Settings' => auth()->user()->can('settings.access') ? route('settings.index') : null, 'Change password' => null]">
     <div class="max-w-4xl">
             <x-card class="p-6">
                 <h2 class="text-[15px] font-medium text-head">{{ __('Update password') }}</h2>
