@@ -22,7 +22,7 @@ class SiteSettingRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string', 'max:5000'],
-            'website' => ['nullable', 'url', 'max:255'],
+            'website' => ['nullable', 'url', 'max:255', 'starts_with:http://,https://'],
             'favicon' => [
                 'nullable', 'bail', 'image', 'mimes:png,jpg,jpeg,webp', 'max:512',
                 Rule::dimensions()->maxWidth(512)->maxHeight(512),

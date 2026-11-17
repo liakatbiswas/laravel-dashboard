@@ -12,12 +12,15 @@ class DashboardController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke()
+    public function __invoke(Request $request)
     {
+        $showStats = (bool) $request->user()?->can('users.view');
+
         return view('dashboard', [
-            'totalUsers' => User::count(),
-            'activeUsers' => User::where('is_active', true)->count(),
-            'totalRoles' => Role::count(),
+            'showStats' => $showStats,
+            'totalUsers' => $showStats ? User::count() : null,
+            'activeUsers' => $showStats ? User::where('is_active', true)->count() : null,
+            'totalRoles' => $showStats ? Role::count() : null,
             'admissionOn' => AdmissionOnOff::isOn(),
         ]);
     }

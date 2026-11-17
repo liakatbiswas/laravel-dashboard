@@ -6,10 +6,14 @@
             <!-- Left -->
             <div class="w-full sm:w-auto text-center sm:text-left leading-relaxed">
                 &copy; {{ date('Y') }}
-                <a href="{{ $siteSettings->website }}" target="_blank" rel="noopener noreferrer"
-                    class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline">
-                    {{ $siteSettings->site_title }}
-                </a>.
+                @if (filled($siteSettings->website))
+                    <a href="{{ $siteSettings->website }}" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline">
+                        {{ $siteSettings->site_title }}
+                    </a>.
+                @else
+                    {{ $siteSettings->site_title }}.
+                @endif
                 <span class="block sm:inline">All Rights Reserved.</span>
             </div>
 

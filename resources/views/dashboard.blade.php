@@ -1,15 +1,16 @@
 <x-app-layout title="Dashboard">
     @php
-        $stats = [
-            ['label' => 'Total users', 'value' => $totalUsers, 'icon' => 'users', 'tone' => 'b'],
-            ['label' => 'Active users', 'value' => $activeUsers, 'icon' => 'check', 'tone' => 'g'],
-            ['label' => 'Roles', 'value' => $totalRoles, 'icon' => 'lock', 'tone' => 's'],
-            [
-                'label' => 'Registration',
-                'value' => $admissionOn ? __('Open') : __('Closed'),
-                'icon' => 'gear',
-                'tone' => $admissionOn ? 'g' : 'y',
-            ],
+        $stats = [];
+        if ($showStats) {
+            $stats[] = ['label' => 'Total users', 'value' => $totalUsers, 'icon' => 'users', 'tone' => 'b'];
+            $stats[] = ['label' => 'Active users', 'value' => $activeUsers, 'icon' => 'check', 'tone' => 'g'];
+            $stats[] = ['label' => 'Roles', 'value' => $totalRoles, 'icon' => 'lock', 'tone' => 's'];
+        }
+        $stats[] = [
+            'label' => 'Registration',
+            'value' => $admissionOn ? __('Open') : __('Closed'),
+            'icon' => 'gear',
+            'tone' => $admissionOn ? 'g' : 'y',
         ];
         $tones = [
             'b' => 'bg-tint text-primary',

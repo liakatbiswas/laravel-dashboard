@@ -40,7 +40,7 @@
                             <a href="{{ route('settings.index') }}"
                                 class="flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md px-3 py-[7px] text-ink hover:bg-soft">
                                 <x-icon name="gear" /> {{ __('Settings') }} </a>
-                        @endcan
+                        @endcanany
                         <hr class="my-1.5 border-line">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
