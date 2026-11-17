@@ -94,6 +94,7 @@
     "Closed": "বন্ধ",
     "Welcome, :name": "স্বাগতম, :name",
     "Use the menu on the left to manage users, roles and settings. Your own profile is under My profile.": "ব্যবহারকারী, ভূমিকা ও সেটিংস পরিচালনার জন্য বাম পাশের মেনু ব্যবহার করুন। নিজের প্রোফাইল দেখুন ‘আমার প্রোফাইল’-এ।",
+    "Your profile is available under My profile in the account menu.": "আপনার প্রোফাইল আপডেট করতে অ্যাকাউন্ট মেনু থেকে ‘আমার প্রোফাইল’ বেছে নিন।",
     "Active": "সক্রিয়",
     "Inactive": "নিষ্ক্রিয়",
     "Invited": "আমন্ত্রিত",

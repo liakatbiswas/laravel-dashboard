@@ -36,6 +36,12 @@
 
     <x-card class="mt-6 p-6">
         <h2 class="text-[15px] font-medium text-head">{{ __('Welcome, :name', ['name' => auth()->user()->name]) }}</h2>
-        <p class="mt-1 text-mute">{{ __('Use the menu on the left to manage users, roles and settings. Your own profile is under My profile.') }}</p>
+        <p class="mt-1 text-mute">
+            @canany(['users.view', 'users.create', 'roles.manage', 'activity.view', 'settings.site.manage', 'admission.manage'])
+                {{ __('Use the menu on the left to manage users, roles and settings. Your own profile is under My profile.') }}
+            @else
+                {{ __('Your profile is available under My profile in the account menu.') }}
+            @endcanany
+        </p>
     </x-card>
 </x-app-layout>
