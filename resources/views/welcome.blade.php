@@ -28,19 +28,19 @@
     @php $admissionOn = \App\Models\AdmissionOnOff::isOn(); @endphp
 
     {{-- Header --}}
-    <header class="sticky top-0 z-10 border-b border-line bg-card/90 backdrop-blur">
+    <header class="sticky top-0 z-20 border-b border-line bg-card/90 backdrop-blur">
         <div class="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 sm:px-6">
             <a href="{{ url('/') }}" class="flex h-9 shrink-0 items-center" aria-label="{{ $siteSettings->site_title }}">
                 <img src="{{ $siteSettings->light_logo_path
                         ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteSettings->light_logo_path)
                         : asset('assets/images/logo/logo-dark.png') }}"
                     alt="{{ $siteSettings->site_title }}"
-                    class="h-9 w-auto max-w-[165px] object-contain dark:hidden">
+                    class="h-9 w-auto max-w-[140px] object-contain dark:hidden sm:max-w-[165px]">
                 <img src="{{ $siteSettings->dark_logo_path
                         ? \Illuminate\Support\Facades\Storage::disk('public')->url($siteSettings->dark_logo_path)
                         : asset('assets/images/logo/logo-dark.png') }}"
                     alt="{{ $siteSettings->site_title }}"
-                    class="hidden h-9 w-auto max-w-[165px] object-contain dark:block{{ ! $siteSettings->dark_logo_path ? ' rounded-md bg-white px-2' : '' }}">
+                    class="hidden h-9 w-auto max-w-[140px] object-contain dark:block sm:max-w-[165px]{{ ! $siteSettings->dark_logo_path ? ' rounded-md bg-white px-2' : '' }}">
             </a>
 
             <nav class="ml-2 hidden items-center gap-5 text-sm font-medium text-mute lg:flex" aria-label="{{ __('Main') }}">
@@ -59,18 +59,51 @@
                 </button>
                 <x-language-switcher />
                 <a href="{{ route('login') }}"
-                    class="inline-flex items-center gap-1.5 rounded-md bg-soft px-3 py-2 text-sm font-medium text-head hover:bg-line">
+                    class="hidden items-center gap-1.5 rounded-md bg-soft px-3 py-2 text-sm font-medium text-head hover:bg-line lg:inline-flex">
                     <x-icon name="user" class="size-4" /> {{ __('Log in') }} </a>
                 @auth
                     <a href="{{ route('dashboard') }}"
-                        class="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-[#2862d8]">
+                        class="hidden items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-[#2862d8] lg:inline-flex">
                         <x-icon name="home" class="size-4" /> {{ __('Dashboard') }} </a>
                 @else
                     @if ($admissionOn)
                         <a href="{{ route('register') }}"
-                            class="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-[#2862d8]">
+                            class="hidden items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-[#2862d8] lg:inline-flex">
                             {{ __('Register') }} </a>
                     @endif
+                @endauth
+                <button id="mm" type="button"
+                    class="grid size-10 shrink-0 cursor-pointer place-items-center rounded-full text-mute hover:bg-soft hover:text-head lg:hidden"
+                    aria-expanded="false" aria-controls="mobile-menu" aria-label="{{ __('Menu') }}">
+                    <span data-mi="open"><x-icon name="menu" /></span>
+                    <span data-mi="close" class="hidden"><x-icon name="x" /></span>
+                </button>
+            </div>
+        </div>
+
+        {{-- Mobile menu panel --}}
+        <div id="mobile-menu" class="hidden border-t border-line bg-card lg:hidden">
+            <div class="mx-auto max-w-6xl space-y-1 px-4 py-4 sm:px-6">
+                <a href="#about" class="block rounded-md px-3 py-2.5 font-medium text-head hover:bg-soft">{{ __('About EFA') }}</a>
+                <a href="#training" class="block rounded-md px-3 py-2.5 font-medium text-head hover:bg-soft">{{ __('Training') }}</a>
+                <a href="#crafts" class="block rounded-md px-3 py-2.5 font-medium text-head hover:bg-soft">{{ __('Crafts') }}</a>
+                <a href="#contact" class="block rounded-md px-3 py-2.5 font-medium text-head hover:bg-soft">{{ __('Contact') }}</a>
+                <hr class="my-2 border-line">
+                @auth
+                    <a href="{{ route('dashboard') }}"
+                        class="flex items-center gap-2 rounded-md bg-primary px-4 py-3 font-medium text-white hover:bg-[#2862d8]">
+                        <x-icon name="home" class="size-4" /> {{ __('Dashboard') }} </a>
+                @else
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ route('login') }}"
+                            class="inline-flex flex-1 basis-40 items-center justify-center gap-1.5 rounded-md bg-soft px-4 py-3 text-sm font-medium text-head hover:bg-line">
+                            <x-icon name="user" class="size-4" /> {{ __('Log in') }} </a>
+                        @if ($admissionOn)
+                            <a href="{{ route('register') }}"
+                                class="inline-flex flex-1 basis-40 items-center justify-center gap-1.5 rounded-md bg-primary px-4 py-3 text-sm font-medium text-white hover:bg-[#2862d8]">
+                                {{ __('Register') }} </a>
+                        @endif
+                    </div>
                 @endauth
             </div>
         </div>
@@ -299,6 +332,42 @@
     </main>
 
     @include('layouts.app-parts.footer')
+
+    <script>
+        (function () {
+            var btn = document.getElementById('mm');
+            var panel = document.getElementById('mobile-menu');
+            if (!btn || !panel) return;
+
+            var setOpen = function (open) {
+                panel.classList.toggle('hidden', !open);
+                btn.setAttribute('aria-expanded', String(open));
+                btn.querySelector('[data-mi="open"]').classList.toggle('hidden', open);
+                btn.querySelector('[data-mi="close"]').classList.toggle('hidden', !open);
+            };
+
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                setOpen(panel.classList.contains('hidden'));
+            });
+
+            panel.addEventListener('click', function (e) {
+                if (e.target.closest('a')) setOpen(false);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!panel.classList.contains('hidden')
+                    && !e.target.closest('#mobile-menu')
+                    && !e.target.closest('#mm')) {
+                    setOpen(false);
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') setOpen(false);
+            });
+        })();
+    </script>
 </body>
 
 </html>
