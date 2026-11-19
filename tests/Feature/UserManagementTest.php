@@ -42,7 +42,7 @@ class UserManagementTest extends TestCase
         $this->actingAs($this->superAdmin())->post(route('users.store'), [
             'name' => 'Teacher One',
             'email' => 'teacher@example.com',
-            'role' => 'teacher',
+            'roles' => ['teacher'],
         ])->assertRedirect(route('users.index'));
 
         $user = User::where('email', 'teacher@example.com')->firstOrFail();
@@ -67,9 +67,44 @@ class UserManagementTest extends TestCase
         $this->actingAs($manager)->post(route('users.store'), [
             'name' => 'X',
             'email' => 'x@example.com',
-            'role' => 'powerful',
-        ])->assertSessionHasErrors('role');
+            'roles' => ['powerful'],
+        ])->assertSessionHasErrors('roles.0');
 
         $this->assertDatabaseMissing('users', ['email' => 'x@example.com']);
+    }
+
+    public function test_updating_a_multi_role_user_keeps_every_selected_role(): void
+    {
+        Notification::fake();
+        Role::create(['name' => 'trainer', 'guard_name' => 'web']);
+
+        $user = User::factory()->create();
+        $user->assignRole('student', 'trainer');
+
+        $this->actingAs($this->superAdmin())->put(route('users.update', $user), [
+            'name' => $user->name,
+            'email' => $user->email,
+            'roles' => ['student', 'trainer'],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertEqualsCanonicalizing(
+            ['student', 'trainer'],
+            $user->fresh()->getRoleNames()->all()
+        );
+    }
+
+    public function test_another_super_admin_can_manage_a_super_admin(): void
+    {
+        $actor = User::factory()->create();
+        $actor->assignRole('super-admin');
+
+        $this->actingAs($actor)->get(route('users.edit', $this->superAdmin()))->assertOk();
+    }
+
+    public function test_login_with_array_email_returns_a_validation_error_instead_of_a_server_error(): void
+    {
+        $this->post('/login', ['email' => ['not-a-string@example.com'], 'password' => 'password'])
+            ->assertRedirect()
+            ->assertSessionHasErrors('email');
     }
 }

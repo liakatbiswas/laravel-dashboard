@@ -4,7 +4,8 @@ return [
 
     'super_admin' => [
         'email' => env('SUPER_ADMIN_EMAIL', 'superadmin@example.com'),
-        'password' => env('SUPER_ADMIN_PASSWORD', 'password'),
+        // No default: a known password must never be shipped with the application.
+        'password' => env('SUPER_ADMIN_PASSWORD'),
     ],
 
     // These roles cannot be deleted or renamed.

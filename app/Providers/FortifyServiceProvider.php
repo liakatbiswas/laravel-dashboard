@@ -56,9 +56,12 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $username = $request->input(Fortify::username());
+            $key = is_string($username) && $username !== ''
+                ? Str::transliterate(Str::lower($username))
+                : 'invalid';
 
-            return Limit::perMinute(5)->by($throttleKey);
+            return Limit::perMinute(5)->by($key.'|'.$request->ip());
         });
 
         RateLimiter::for('two-factor', function (Request $request) {

@@ -15,5 +15,7 @@ class PermissionSeeder extends Seeder
         foreach (array_keys(config('permissions.permissions')) as $name) {
             Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }
+
+        $this->command?->info('Permission Created successfully.');
     }
 }

@@ -33,7 +33,8 @@ class UserRequest extends FormRequest
             'email' => ['required', 'email', 'max:255',
                 Rule::unique('users', 'email')->ignore($target?->id)],
             'phone' => ['nullable', 'string', 'max:20'],
-            'role' => ['required',
+            'roles' => ['required', 'array', 'min:1'],
+            'roles.*' => ['string', 'distinct',
                 Rule::in($this->user()->assignableRoles())],
         ];
     }
@@ -42,6 +43,8 @@ class UserRequest extends FormRequest
     {
         return [
             'email.unique' => __('This email has been used before (can also be a deleted user,  see the Deleted filter).'),
+            'roles.required' => __('Select at least one role.'),
+            'roles.*.in' => __('You cannot assign a role you do not have access to.'),
         ];
     }
 }

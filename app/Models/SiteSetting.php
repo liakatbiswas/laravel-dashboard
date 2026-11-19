@@ -33,7 +33,7 @@ class SiteSetting extends Model
         // The settings row is missing (fresh install or accidental deletion).
         // Fall back to sane defaults instead of taking every page down.
         $fallback = new static;
-        $fallback->setRawAttributes(['site_title' => config('app.name', 'School Management System')], true);
+        $fallback->setRawAttributes(['site_title' => config('app.name', 'EFA Bangladesh')], true);
         $fallback->exists = false;
 
         return $fallback;

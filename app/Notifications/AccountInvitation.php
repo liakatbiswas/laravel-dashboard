@@ -35,7 +35,8 @@ class AccountInvitation extends Notification
             'email' => $notifiable->getEmailForPasswordReset(),
         ]);
 
-        $minutes = config('auth.passwords.invitations.expire');
+        $broker = config('fortify.passwords');
+        $minutes = config("auth.passwords.{$broker}.expire");
 
         return (new MailMessage)
             ->subject(config('app.name').': '.__('Your account has been created'))

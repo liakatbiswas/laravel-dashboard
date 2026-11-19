@@ -64,7 +64,7 @@ class AuditRegressionTest extends TestCase
         $email = $user->email;
 
         $this->actingAs($user)->put(route('users.update', $user), [
-            'name' => $user->name, 'email' => 'attacker@example.com', 'role' => 'super-admin',
+            'name' => $user->name, 'email' => 'attacker@example.com', 'roles' => ['super-admin'],
         ])->assertForbidden();
 
         $this->assertSame($email, $user->fresh()->email);
@@ -255,7 +255,7 @@ class AuditRegressionTest extends TestCase
         $user->createToken('existing');
 
         $this->actingAs($this->superAdmin())->put(route('users.update', $user), [
-            'name' => 'Updated name', 'email' => 'updated@example.com', 'role' => 'student',
+            'name' => 'Updated name', 'email' => 'updated@example.com', 'roles' => ['student'],
         ])->assertSessionHasNoErrors();
 
         $this->assertSame('updated@example.com', $user->fresh()->email);
@@ -268,7 +268,7 @@ class AuditRegressionTest extends TestCase
     {
         Notification::fake();
         $this->actingAs($this->superAdmin())->post(route('users.store'), [
-            'name' => 'Invite', 'email' => 'invite@example.com', 'role' => 'student',
+            'name' => 'Invite', 'email' => 'invite@example.com', 'roles' => ['student'],
         ])->assertSessionHasNoErrors();
         $user = User::where('email', 'invite@example.com')->firstOrFail();
 
@@ -350,7 +350,7 @@ class AuditRegressionTest extends TestCase
         $this->app->instance(MailChannel::class, $channel);
 
         $this->actingAs($this->superAdmin())->post(route('users.store'), [
-            'name' => 'Retry invitation', 'email' => 'retry@example.com', 'role' => 'student',
+            'name' => 'Retry invitation', 'email' => 'retry@example.com', 'roles' => ['student'],
         ])->assertSessionHas('warning')->assertSessionHasNoErrors();
 
         $user = User::where('email', 'retry@example.com')->firstOrFail();
@@ -386,7 +386,7 @@ class AuditRegressionTest extends TestCase
         DB::table('sessions')->insert($row);
 
         $this->actingAs($this->superAdmin())->put(route('users.update', $user), [
-            'name' => $user->name, 'email' => 'new-address@example.com', 'role' => 'student',
+            'name' => $user->name, 'email' => 'new-address@example.com', 'roles' => ['student'],
         ])->assertSessionHasNoErrors();
 
         $this->assertSame(0, DB::connection('session_test')->table('sessions')->where('id', 'target-session')->count());

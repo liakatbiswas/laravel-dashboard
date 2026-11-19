@@ -31,7 +31,8 @@
             <tbody>
                 @forelse ($activities as $activity)
                     <tr>
-                        <td class="text-mute" title="{{ $activity->created_at }}">
+                        <td class="text-mute"
+                            title="{{ $activity->created_at->copy()->timezone('Asia/Dhaka')->locale(app()->getLocale())->translatedFormat('d M Y, h:i A') }}">
                             {{ $activity->created_at->locale(app()->getLocale())->diffForHumans() }}</td>
                         <td><span
                                 class="rounded bg-tint px-2 py-0.5 text-xs font-medium text-primary">{{ $activity->log_name ?? 'default' }}</span>

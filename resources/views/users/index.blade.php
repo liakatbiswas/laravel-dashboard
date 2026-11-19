@@ -86,7 +86,7 @@
                                 <span class="rounded bg-ok/15 px-2 py-0.5 text-xs font-medium text-ok">{{ __('Active') }}</span>
                             @endif
                         </td>
-                        <td class="text-mute">{{ $user->created_at->locale(app()->getLocale())->translatedFormat('d M Y') }}</td>
+                        <td class="text-mute">{{ $user->created_at->copy()->timezone('Asia/Dhaka')->locale(app()->getLocale())->translatedFormat('d M Y') }}</td>
 
                         {{-- Change status: only for live users, not for yourself --}}
                         <td>

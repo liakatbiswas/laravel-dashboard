@@ -42,7 +42,10 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('users.create', ['roles' => auth()->user()->assignableRoles()]);
+        return view('users.create', [
+            'roles' => auth()->user()->assignableRoles(),
+            'selectedRoles' => [],
+        ]);
     }
 
     public function store(UserRequest $request): RedirectResponse
@@ -53,8 +56,10 @@ class UserController extends Controller
          * 'set-password' link itself serves as proof of ownership.
          */
         $user = DB::transaction(function () use ($data) {
-            $role = Role::where('name', $data['role'])->where('guard_name', 'web')->lockForUpdate()->firstOrFail();
-            abort_unless(auth()->user()->assignableRoles()->contains($role->name), 403);
+            $roleNames = array_values(array_unique($data['roles']));
+            $roles = Role::whereIn('name', $roleNames)->where('guard_name', 'web')->lockForUpdate()->get();
+            abort_unless($roles->count() === count($roleNames), 422);
+            abort_unless($roles->pluck('name')->diff(auth()->user()->assignableRoles())->isEmpty(), 403);
             $user = (new User)->forceFill([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -70,13 +75,13 @@ class UserController extends Controller
             $user->save();
             $user->enableLogging();
 
-            $user->syncRoles($role);
+            $user->syncRoles($roles->all());
 
             activity()
                 ->causedBy(auth()->user())
                 ->performedOn($user)
                 ->withProperties([
-                    'role' => $data['role'],
+                    'roles' => $roleNames,
                     'attributes' => $user->only(['name', 'email', 'phone']),
                 ])
                 ->log("User invited: {$user->email}");
@@ -104,6 +109,7 @@ class UserController extends Controller
         return view('users.edit', [
             'user' => $user->load('roles'),
             'roles' => auth()->user()->assignableRoles(),
+            'selectedRoles' => $user->roles->pluck('name')->all(),
         ]);
     }
 
@@ -114,10 +120,12 @@ class UserController extends Controller
 
         $emailChanged = $user->email !== $data['email'];
         DB::transaction(function () use ($user, $data, &$emailChanged): void {
-            $role = Role::where('name', $data['role'])->where('guard_name', 'web')->lockForUpdate()->firstOrFail();
+            $roleNames = array_values(array_unique($data['roles']));
+            $roles = Role::whereIn('name', $roleNames)->where('guard_name', 'web')->lockForUpdate()->get();
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
             Gate::authorize('manage', $user);
-            abort_unless(auth()->user()->assignableRoles()->contains($role->name), 403);
+            abort_unless($roles->count() === count($roleNames), 422);
+            abort_unless($roles->pluck('name')->diff(auth()->user()->assignableRoles())->isEmpty(), 403);
             $oldRoles = $user->getRoleNames()->sort()->values()->all();
             $user->fill(['name' => $data['name'], 'email' => $data['email'], 'phone' => $data['phone'] ?? null]);
             $changedEmail = $user->isDirty('email');
@@ -129,10 +137,11 @@ class UserController extends Controller
             if ($changedEmail) {
                 $this->revokeAccess($user);
             }
-            $user->syncRoles($role);
-            if ($oldRoles !== [$role->name]) {
+            $user->syncRoles($roles->all());
+            $newRoles = $user->roles()->pluck('name')->sort()->values()->all();
+            if ($oldRoles !== $newRoles) {
                 activity()->causedBy(auth()->user())->performedOn($user)
-                    ->withProperties(['old' => $oldRoles, 'new' => [$role->name]])->log('Role changed');
+                    ->withProperties(['old' => $oldRoles, 'new' => $newRoles])->log('Roles changed');
             }
         });
         $user->refresh();
@@ -243,7 +252,8 @@ class UserController extends Controller
 
     private function sendInvite(User $user): void
     {
-        $token = Password::broker('invitations')->createToken($user);
+        $broker = config('fortify.passwords');
+        $token = Password::broker($broker)->createToken($user);
         $user->notify(new AccountInvitation($token));
     }
 

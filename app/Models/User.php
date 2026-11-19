@@ -47,6 +47,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'two_factor_secret', 'two_factor_recovery_codes',
     ];
 
+    /**
+     * Permission names loaded for this instance during the current request.
+     *
+     * @var Collection<int, string>|null
+     */
+    private ?Collection $cachedPermissionNames = null;
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -55,13 +62,26 @@ class User extends Authenticatable implements MustVerifyEmail
             ->dontLogEmptyChanges();
     }
 
+    /**
+     * Names of every permission the user holds directly or through roles.
+     *
+     * Memoized per instance so repeated authorization checks (for example,
+     * once per row in the user list) do not recompute the permission set.
+     *
+     * @return Collection<int, string>
+     */
+    public function permissionNames(): Collection
+    {
+        return $this->cachedPermissionNames ??= $this->getAllPermissions()->pluck('name');
+    }
+
     public function assignableRoles(): Collection
     {
         if ($this->hasRole('super-admin')) {
             return Role::orderBy('name')->pluck('name');
         }
 
-        $mine = $this->getAllPermissions()->pluck('name');
+        $mine = $this->permissionNames();
 
         return Role::with('permissions')
             ->where('name', '!=', 'super-admin')

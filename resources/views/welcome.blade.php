@@ -58,14 +58,14 @@
                     <x-icon name="sun" class="hidden dark:block" />
                 </button>
                 <x-language-switcher />
-                <a href="{{ route('login') }}"
-                    class="hidden items-center gap-1.5 rounded-md bg-soft px-3 py-2 text-sm font-medium text-head hover:bg-line lg:inline-flex">
-                    <x-icon name="user" class="size-4" /> {{ __('Log in') }} </a>
                 @auth
                     <a href="{{ route('dashboard') }}"
                         class="hidden items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-[#2862d8] lg:inline-flex">
                         <x-icon name="home" class="size-4" /> {{ __('Dashboard') }} </a>
                 @else
+                    <a href="{{ route('login') }}"
+                        class="hidden items-center gap-1.5 rounded-md bg-soft px-3 py-2 text-sm font-medium text-head hover:bg-line lg:inline-flex">
+                        <x-icon name="user" class="size-4" /> {{ __('Log in') }} </a>
                     @if ($admissionOn)
                         <a href="{{ route('register') }}"
                             class="hidden items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-[#2862d8] lg:inline-flex">
